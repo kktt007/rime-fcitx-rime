@@ -1,0 +1,169 @@
+# Rime schema settings
+# encoding: utf-8
+
+schema:
+  schema_id: Blue_sapphire
+  name: "蓝宝石"
+  version: "0.9"
+  author:
+    - 發明人 秋风大神
+  description: |
+    新型形码编码蓝宝石版
+    碼表设计蓝宝石时得到尘实网友的支持，提建议助优化，在此表示感谢！
+            设计蓝宝石之前设计了钻石码，有了钻石的经验才能做好蓝宝石， 
+            钻石码得到蓝落萧的帮助，在此表示感谢！       
+            设计蓝宝石时使用到形码设计师，这软件得到的火炬喵指点，在此表示感谢！
+            设计蓝宝石时使用到多多码表编辑器，在此表示感谢！
+            设计蓝宝石时使用到形码测评系统，在此表示感谢！
+    敲 % 鍵進入拼音反查
+    敲 ` 鍵進入笔画反查
+  dependencies:
+    - easy_en
+    - pinyin_simp
+##    - liangfen
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 🌳️五, 🌿ab ]
+  - name: full_shape
+    states: [ 半️, 全 ]
+  - name: extended_charset
+    states: [ 常, 廣 ]
+  - name: zh_trad
+    states: [ 簡, 繁 ]
+  - name: emoji_cn
+    states: [   〇,   🍂  ]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - affix_segmentor@reverse_lookup
+    - affix_segmentor@pinyin_lookup
+    - affix_segmentor@stroke_lookup
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator
+    - table_translator@english
+    - table_translator@stroke_lookup
+    - script_translator@pinyin_lookup
+    - reverse_lookup_translator
+  filters:
+    - simplifier@emoji_switch
+    - simplifier
+    - uniquifier
+    - simplifier@emoji_cn
+    - reverse_lookup_filter@stroke_reverse_lookup
+    - reverse_lookup_filter@pinyin_reverse_lookup
+emoji_switch:
+  opencc_config: emoji.json
+  option_name: emoji_segestion
+  tags: [ pinyin, jyutping, abc ]
+  tips: all
+
+english:
+  dictionary: easy_en
+  spelling_hints: 9
+  enable_completion: false
+  enable_sentence: false
+  initial_quality: -1
+
+speller:
+  alphabet: 'zyxwvutsrqponmlkjihgfedcba'
+  delimiter: " ;'"
+  max_code_length: 4
+  auto_select: true
+  auto_select_pattern: ^;.$|^\w{4}$
+  auto_clear: max_length  #  空码输入自动清
+
+translator:
+  dictionary: Blue_sapphire
+  enable_charset_filter: true
+  enable_sentence: false
+  enable_encoder: true
+  encode_commit_history: false
+  enable_completion: true
+  enable_user_dict: true
+  max_phrase_length: 4
+  disable_user_dict_for_patterns:
+    - "^z.*$"
+
+emoji_cn:
+  opencc_config: emoji.json
+  option_name: emoji_cn
+  tips: all
+
+#笔画反查
+stroke_lookup:
+  tag: stroke_lookup
+  prefix: "%"
+  #suffix: "'"
+  tips: 〔笔画〕
+  dictionary: stroke
+  preedit_format:
+    - xlit/hspnz/一丨丿丶乙/
+stroke_reverse_lookup:
+  tips: 〔stroke_lookup〕
+  overwrite_comment: true
+  dictionary: Blue_sapphire
+  preedit_format:
+    import_preset: stroke
+  comment_format:
+    import_preset: stroke
+  prism: Blue_sapphire
+  enable_sentences: true
+
+#拼音反查
+pinyin_lookup:
+  tag: pinyin_lookup
+  prefix: '`'
+  tips: 〔拼音〕
+  dictionary: pinyin_simp
+  preedit_format:
+    import_preset: pinyin_simp
+  comment_format:
+    import_preset: pinyin_simp
+
+pinyin_reverse_lookup:
+  tags: [ pinyin_lookup ] #掛在這個tag所對應的翻譯器上
+  overwrite_comment: true #覆盖其它提示
+  dictionary: Blue_sapphire #反查其码
+  preedit_format:
+    import_preset: pinyin_simp
+  comment_format:
+    import_preset: pinyin_simp
+  prism: Blue_sapphire
+  enable_sentences: true
+
+
+simplifier:
+  opencc_config: s2t.json
+  option_name: zh_trad
+
+punctuator:
+  import_preset: symbols
+
+key_binder:
+  import_preset: default
+  bindings:
+  - { when: has_menu, accept: "#", toggle: emoji_cn }
+  - { when: has_menu, accept: "$", toggle: zh_trad }
+
+recognizer:
+  import_preset: default
+  patterns:
+    stroke_lookup: "^%[a-z]*'?$"
+    pinyin_lookup: "^`[A-Z|a-z|0-9]*'?$"
+    punct: '^/([0-9]0?|[A-Za-z]+)$'

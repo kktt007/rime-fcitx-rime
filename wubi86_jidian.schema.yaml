@@ -1,0 +1,89 @@
+# Rime schema settings
+# encoding: utf-8
+
+schema:
+  schema_id: wubi86_jidian
+  name: "极点五笔86"
+  version: "1.0"
+  author:
+    - 创始人 王永民先生
+  description: |
+    五笔字形 86 极点极爽版
+  dependencies:
+    - luna_pinyin
+#    - pinyin_simp
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中文, 西文 ]
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - name: extended_charset
+    states: [ 常用, 扩展 ]
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - reverse_lookup_translator
+    - table_translator
+    - lua_translator@date_translator # 自定义系统变量输出
+  filters:
+#    - lua_filter@single_char_first_filter # 单字优先方法
+
+speller:
+  delimiter: " ;'"
+  max_code_length: 4                    # 四码上屏
+  auto_select: true                     # 自动上屏
+  auto_select_unique_candidate: true    # 无重码自动上屏
+
+translator:
+  dictionary: wubi86_jidian             # 翻译器将调取此字典文件
+  enable_charset_filter: true
+  enable_sentence: false                # 开关语句模式
+  enable_user_dict: false               # 是否开启用户词典（用户词典记录动态字词频，用户词）
+  enable_encoder: false                  # 自动造词
+  encode_commit_history: false          # 是否对已上屏的词自动上屏
+  max_phrase_length: 10                 # 单词最大词长
+  db_class: tabledb                     # userdb - 二进制 / tabledb - 人类语言
+  disable_user_dict_for_patterns:       # z开头的输入忽略，对应下面的拼音反查，
+    - "^z.*$"
+
+
+reverse_lookup:
+  dictionary: pinyin_simp
+  prefix: "z"
+  suffix: "'"
+  tips: [拼音 ]
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+
+punctuator:
+  import_preset: symbols
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    reverse_lookup: "^z[a-z]*'?$"

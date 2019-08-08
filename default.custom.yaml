@@ -1,0 +1,22 @@
+# Rime default settings
+# encoding: utf-8
+
+config_version: "0.38"
+
+patch:
+
+  "menu/page_size": 5
+  schema_list:
+    - {schema: flypy}
+    - {schema: luna_pinyin}
+    - {schema: Blue_sapphire}
+    - {schema: easy_en}
+    - {schema: double_pinyin_flypy}
+    - {schema: wubi06}
+    - {schema: wubi86_jidian}
+    - {schema: wubi_pinyin}
+  switcher:
+    caption: "〔切换输入法〕"
+    hotkeys:
+    - F4
+    - "Control+grave"
